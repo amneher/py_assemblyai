@@ -1,9 +1,12 @@
 from time import *
-import sys
+import sys, os
 import requests
 import json as JSON
 
-API_KEY = "Your API Key Here."
+API_KEY = str(os.environ['ASSEMBLYAPIKEY'])
+
+file_output = False
+out_file = ''
 
 def read_file(filename, chunk_size=5242880):
     with open(filename, 'rb') as _file:
@@ -15,7 +18,15 @@ def read_file(filename, chunk_size=5242880):
 
 
 def upload():
-	filename = input("Enter a filename with full path:  ")
+	filename = input("Enter an input file:  ")
+	print("If you input a name below, I will append '.txt' to it and put the transcript there.")
+	output_file = input("Enter an output file (Else, output will be directed to STDOUT.):  ")
+	if output_file:
+		global file_output
+		file_output = True
+		global out_file
+		out_file = output_file + '.txt'
+		print("line 27 " + str(file_output) + ' '+ str(out_file))
 	headers = {'authorization': API_KEY}
 	response = requests.post('https://api.assemblyai.com/v2/upload', headers=headers, data=read_file(filename))
 
@@ -23,7 +34,10 @@ def upload():
 
 def submit():
 	u = upload()
-	url = u['upload_url']
+	if u['upload_url']:
+		url = u['upload_url']
+	else:
+		print(u)
 	endpoint = "https://api.assemblyai.com/v2/transcript"
 
 	json = {
@@ -58,6 +72,14 @@ def get_transcript():
 		print(r['status'])
 	transcript = requests.get(endpoint, headers=headers)
 	raw = transcript.json()
+	print("line 73 " + str(file_output))
+	if file_output:
+
+		output = out_file
+		with open(output, 'wt') as f:
+			for line in raw['text']:
+				f.write(line)
+		return output
 
 	print(raw['text'])
 
