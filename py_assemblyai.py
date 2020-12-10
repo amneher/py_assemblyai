@@ -1,9 +1,9 @@
 from time import *
-import sys
+import sys, os
 import requests
 import json as JSON
 
-API_KEY = "632c56e1995345a3bf0cf48f68a17228"
+API_KEY = str(os.environ['ASSEMBLYAPIKEY'])
 
 file_output = False
 out_file = ''
