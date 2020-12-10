@@ -22,8 +22,11 @@ def upload():
 	print("If you input a name below, I will append '.txt' to it and put the transcript there.")
 	output_file = input("Enter an output file (Else, output will be directed to STDOUT.):  ")
 	if output_file:
+		global file_output
 		file_output = True
-		out_file = output_file
+		global out_file
+		out_file = output_file + '.txt'
+		print("line 27 " + str(file_output) + ' '+ str(out_file))
 	headers = {'authorization': API_KEY}
 	response = requests.post('https://api.assemblyai.com/v2/upload', headers=headers, data=read_file(filename))
 
@@ -69,13 +72,13 @@ def get_transcript():
 		print(r['status'])
 	transcript = requests.get(endpoint, headers=headers)
 	raw = transcript.json()
-
+	print("line 73 " + str(file_output))
 	if file_output:
 
 		output = out_file
 		with open(output, 'wt') as f:
 			for line in raw['text']:
-				f.write(line + '\n')
+				f.write(line)
 		return output
 
 	print(raw['text'])
