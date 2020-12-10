@@ -1,1 +1,1 @@
-Python>=3.6
+pytest==6.1.2
